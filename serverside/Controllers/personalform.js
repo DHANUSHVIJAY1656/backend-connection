@@ -41,7 +41,7 @@ const dietFormSchema = new mongoose.Schema({
 const DietForm = mongoose.model('DietForm', dietFormSchema);
 
 // POST endpoint for submitting the personalized diet form
-app.post('/api/submit-diet-form', async (req, res) => {
+app.post('/personaldiet', async (req, res) => {
   const {
     fullName,
     phoneNumber,

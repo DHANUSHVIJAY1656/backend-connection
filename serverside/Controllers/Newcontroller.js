@@ -50,7 +50,7 @@ const dietFormSchema = new mongoose.Schema({
 // Mongoose Model
 const DietForm = mongoose.model('post', dietFormSchema);
 // API Routes
-app.post('/api/diet-form/submit', async (req, res) => {
+app.post('/diet', async (req, res) => {
   try {
     const formData = new DietForm(req.body);
     const savedData = await formData.save();

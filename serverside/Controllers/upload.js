@@ -62,7 +62,7 @@ app.post('/api/upload-report', upload.single('report-upload'), async (req, res) 
 });
 
 // POST endpoint for manual submission of lab results
-app.post('/api/submit-lab-results', async (req, res) => {
+app.post('/dietupload', async (req, res) => {
   const { hemoglobin, serumCreatinine, egfr, potassium, phosphorus, ipth, vitaminD } = req.body;
 
   try {

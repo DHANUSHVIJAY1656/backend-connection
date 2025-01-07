@@ -46,7 +46,7 @@ const UploadReports = () => {
     e.preventDefault();
   
     try {
-      const response = await axios.post('http://localhost:5000/diet', formData);
+      const response = await axios.post('http://localhost:5000/dietupload', formData);
 
       console.log("Submitted Data:", response.data);
       
