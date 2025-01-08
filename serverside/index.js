@@ -65,10 +65,10 @@ app.get('/diet', (req, res) => {
   res.json({ statusCode: 200, message: 'Diet List', data: dietList });
 });
 
- 
+
 // POST /diet: Add a new diet to the list
 app.post('/diet', (req, res) => {
-  console.log(req.body)
+  
   const { name, description } = req.body;
   const newDiet = { id: Date.now(), name, description };
 
