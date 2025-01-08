@@ -1,27 +1,7 @@
-// server.js
-const express = require('express');
 const mongoose = require('mongoose');
-const bodyParser = require('body-parser');
-const cors = require('cors');
-const dotenv = require('dotenv');
 
-dotenv.config();
-
-const app = express();
-const PORT = process.env.PORT || 5000;
-
-// Middleware
-app.use(cors());
-app.use(bodyParser.json());
-
-// Connect to MongoDB
-mongoose
-  mongoose.connect('mongodb://localhost:27017//user/post', {
-    useNewUrlParser: true,
-    useUnifiedTopology: true
-  });
 // Mongoose Schema
-const dietFormSchema = new mongoose.Schema({
+const FormData = new mongoose.Schema({
   name: { type: String, required: true },
   age: { type: Number, required: true },
   gender: { type: String, required: true, enum: ['male', 'female', 'others'] },
@@ -48,13 +28,14 @@ const dietFormSchema = new mongoose.Schema({
 });
 
 // Mongoose Model
-const DietForm = mongoose.model('post', dietFormSchema);
+const DietForm = mongoose.model('DeitForm', FormData);
 // API Routes
-app.post('/diet', async (req, res) => {
+const DietFormController = async (req, res) => {
   try {
     const formData = new DietForm(req.body);
+    console.log(req.body)
     const savedData = await formData.save();
-    res.status(201).json({
+    res.status(200).json({
       message: 'Form submitted successfully',
       data: savedData,
     });
@@ -65,9 +46,8 @@ app.post('/diet', async (req, res) => {
       error: error.message,
     });
   }
-});
+};
 
-// Start the server
-app.listen(PORT, () => {
-  console.log(`Server running on port `);
-});
+
+
+module.exports = DietFormController
