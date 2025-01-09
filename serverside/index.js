@@ -3,8 +3,10 @@ const mongoose = require('mongoose');
 const cors = require('cors');
 const bodyParser = require('body-parser');
 const dotenv = require('dotenv');
-const DietFormController = require('./Controllers/Newcontroller');
-
+const { DietFormController, getAllDiets } = require('./module/newcontroller');
+const {PersonalController, getPersonal } = require('./module/personalform');
+const { InfoController, getinfo } = require('./module/textform')
+const {deitinfoController,getdietinfo} = require('./module/dietinfo');
 const app = express();
 const router = require('express').Router();
 
@@ -26,56 +28,19 @@ mongoose
     console.error('Failed to connect to MongoDB:', err.message);
   });
 
-  router.post("/diet-form",DietFormController)
 
-  app.use('/api', router);
+  app.get('/api/diet', getAllDiets);
+  app.post('/api/diet', DietFormController);
 
-// const dietList = [
-//   { id: 1, name: 'Keto', description: 'Low-carb, high-fat diet' },
-//   { id: 2, name: 'Vegan', description: 'Plant-based diet' }
-// ];
+  app.get('/api/personal',getPersonal);
+  app.post('/api/personal',PersonalController);
+   
+  app.get('/api/info',getinfo);
+  app.post('/api/info',InfoController);
+ 
+  app.get('/api/deitinfo',getdietinfo);
+  app.post('/api/deitinfo',deitinfoController);
 
-// // GET /diet: Retrieve the diet list
-// app.get('/diet', (req, res) => {
-//   console.log('Diet Get');
-//   res.json({ statusCode: 200, message: 'Diet List', data: dietList });
-// });
-
-// // POST /diet: Add a new diet to the list
-// app.post('/diet', (req, res) => {
-//   const { name, description } = req.body.name;
-
-//   const newDiet = { id: Date.now(), name, description };
-//   dietList.push(newDiet); 
-//   console.log('New diet added:', newDiet);
-
-//   res.status(201).json({ statusCode: 201, message: 'Diet added', data: newDiet });
-// });
-
-
-
-const dietList = [
-  { id: 1, name: 'Keto', description: 'Low-carb, high-fat diet' },
-  { id: 2, name: 'Vegan', description: 'Plant-based diet' }
-];
-
-// GET /diet: Retrieve the diet list
-app.get('/diet', (req, res) => {
-  console.log('Diet Get');
-  res.json({ statusCode: 200, message: 'Diet List', data: dietList });
-});
-
-
-// POST /diet: Add a new diet to the list
-app.post('/diet', (req, res) => {
-  
-  const { name, description } = req.body;
-  const newDiet = { id: Date.now(), name, description };
-
-  dietList.push(newDiet); // Add to the mock data
-  console.log('New diet added:', newDiet);
-  res.status(201).json({ statusCode: 201, message: 'Diet added', data: newDiet });
-});
 
 
 

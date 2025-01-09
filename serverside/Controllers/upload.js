@@ -1,8 +1,8 @@
-const express = require('express');
+
 const mongoose = require('mongoose');
 const multer = require('multer');
 const bodyParser = require('body-parser');
-const path = require('path');
+
 
 // Create the Express app
 const app = express();
@@ -14,11 +14,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 // Set up static folder for uploaded files
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
-// MongoDB connection
-mongoose.connect('mongodb://localhost:27017//user/kidneyHealth', {
-  useNewUrlParser: true,
-  useUnifiedTopology: true
-});
+
 
 // Create a schema for lab results
 const labResultSchema = new mongoose.Schema({
@@ -83,7 +79,4 @@ app.post('/dietupload', async (req, res) => {
   }
 });
 
-// Server listening
-app.listen(5000, () => {
-  console.log('Server is running on http://localhost:5000');
-});
+

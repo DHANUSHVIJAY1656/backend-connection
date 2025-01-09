@@ -35,7 +35,7 @@ const DietForm = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post('http://localhost:5000/api/diet-form', formData);
+      const response = await axios.post('http://localhost:5000/api/diet', formData);
       console.log('Form submitted successfully:', response.data);
       alert('Form submitted successfully!');
     } catch (error) {
