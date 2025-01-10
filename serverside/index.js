@@ -7,6 +7,7 @@ const { DietFormController, getAllDiets } = require('./module/newcontroller');
 const {PersonalController, getPersonal } = require('./module/personalform');
 const { InfoController, getinfo } = require('./module/textform')
 const {deitinfoController,getdietinfo} = require('./module/dietinfo');
+const {LabrepoController, getrepo} = require('./module/report');
 const app = express();
 const router = require('express').Router();
 
@@ -40,7 +41,9 @@ mongoose
  
   app.get('/api/deitinfo',getdietinfo);
   app.post('/api/deitinfo',deitinfoController);
-
+ 
+  app.get('/api/report',getrepo);
+  app.post('/api/report',LabrepoController);
 
 
 

@@ -1,90 +1,90 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 
-// Mongoose Schema
 const FormData = new mongoose.Schema({
-  name: { type: String  },
-  age: { type: Number },
-  gender: { type: String, enum: ['male', 'female', 'others'] },
-  weight: { type: Number },
-  heightCm: { type: Number, required: function () { return this.heightUnit === 'cm'; } },
-  heightFt: { type: Number, required: function () { return this.heightUnit === 'ftin'; } },
-  heightIn: { type: Number, required: function () { return this.heightUnit === 'ftin'; } },
-  heightUnit: { type: String,  enum: ['cm', 'ftin'] },
-  dietType: { type: String, enum: ['vegetarian', 'non-vegetarian'] },
-  dietSubType: { type: String },
+  name: {
+    type: String,
+    trim: true,
+  },
+  age: {
+    type: Number,
+    min: 18,
+    max: 100,
+  },
+  gender: {
+    type: String,
+    enum: ["Male", "Female", "Other"],
+  },
+  weight: {
+    type: Number,
+  },
+  heightCm: {
+    type: Number,
+  },
+  heightFt: {
+    type: Number,
+  },
+  heightIn: {
+    type: Number,
+  },
+  heightUnit: {
+    type: String,
+   
+    enum: ["cm", "ft"],
+  },
+  dietType: {
+    type: String,
+    
+    enum: ["Vegetarian", "Non-Vegetarian"],
+  },
+  subDietType: {
+    type: String,
+    required: function () {
+      return this.dietType === "Vegetarian" || this.dietType === "Non-Vegetarian";
+    },
+    enum: [
+      "Lacto",
+      "Ovo",
+      "Vegan",
+      "Pescatarian",
+      "Poultry-based",
+      "Red Meat-based",
+      "Flexitarion",
+    ],
+  },
+  flexSubOption: {
+    type: String,
+  },
   activityLevel: {
     type: String,
-    enum: ['sedentary', 'mildly-active', 'moderately-active', 'very-active'],
+    enum: ["Sedentary", "Mildly Active", "Moderately Active", "Very Active"],
   },
-  hasKidneyDisease: { type: Boolean, required: true },
-  kidneyCondition: { type: String ,required:false},
-  hasDiabetes: { type: Boolean, required: true },
-  hasHypertension: { type: Boolean, required: true },
-  hasGout: { type: Boolean, required: true },
-  hasCardiovascularDisease: { type: Boolean, required: true },
-  hasOtherComorbidity: { type: Boolean, required: true },
-  otherComorbidityDetails: { type: String ,},
+  hasKidneyDisease: {
+    type: Boolean,
+ 
+  },
+  kidneyCondition: {
+    type: String,
+    trim: true,
+  },
+  otherConditions: {
+    type: [String],
+    enum: [
+      "Diabetes",
+      "Hypertension",
+      "Gout",
+      "Cardiovascular Disease",
+      "Other",
+    ],
+  },
+  otherConditionDetails: {
+    type: String,
+    trim: true,
+  },
+}, {
+  timestamps: true, // Adds createdAt and updatedAt timestamps
 });
 
 
 // Mongoose Model
  const DietForm = mongoose.model('DietForm', FormData);
  module.exports = DietForm;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// const mongoose = require('mongoose');
-
-// // Mongoose Schema
-// const FormData = new mongoose.Schema({
-//   name: { type: String, required: true },
-//   age: { type: Number, required: true },
-//   gender: { type: String, required: true, enum: ['male', 'female', 'others'] },
-//   weight: { type: Number, required: true },
-//   heightUnit: { type: String, required: true, enum: ['cm', 'ftin'] },
-//   height: {
-//     type: Object,
-//     required: true,
-//     validate: {
-//       validator: function (value) {
-//         if (this.heightUnit === 'cm') return value.cm;
-//         if (this.heightUnit === 'ftin') return value.ft && value.in;
-//         return false;
-//       },
-//       message: 'Height must be provided according to the heightUnit.',
-//     },
-//   },
-//   dietType: { type: String, required: true, enum: ['vegetarian', 'non-vegetarian'] },
-//   dietSubType: { type: String },
-//   activityLevel: {
-//     type: String,
-//     required: true,
-//     enum: ['sedentary', 'mildly-active', 'moderately-active', 'very-active'],
-//   },
-//   hasKidneyDisease: { type: Boolean, required: true },
-//   kidneyCondition: { type: String },
-//   hasDiabetes: { type: Boolean, required: true },
-//   hasHypertension: { type: Boolean, required: true },
-//   hasGout: { type: Boolean, required: true },
-//   hasCardiovascularDisease: { type: Boolean, required: true },
-//   hasOtherComorbidity: { type: Boolean, required: true },
-//   otherComorbidityDetails: { type: String },
-// });
-
-// // Mongoose Model
-// const DietForm = mongoose.model('DietForm', FormData);
-// module.exports = DietForm;
