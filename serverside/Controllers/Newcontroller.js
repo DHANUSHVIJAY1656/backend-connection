@@ -77,11 +77,34 @@ const FormData = new mongoose.Schema({
     ],
   },
   otherConditionDetails: {
-    type: String,
-    trim: true,
+    type: String, 
+    default: null 
+  },
+  bmi: {
+    type: Number,
+    required: true,
+    min: 0, 
+  },
+  ibw: {
+    type: Number,
+    required: true,
+    min: 0,
+  },
+  abw: {
+    type: Number,
+    required: true,
+    min: 0, 
+  },
+  weightDiff: {
+    type: Number,
+    required: true,
+  },
+  createdAt: {
+    type: Date,
+    default: Date.now,
   },
 }, {
-  timestamps: true, // Adds createdAt and updatedAt timestamps
+  timestamps: true, 
 });
 
 

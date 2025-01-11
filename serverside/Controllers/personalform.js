@@ -1,22 +1,21 @@
-
 const mongoose = require('mongoose');
 
-// Create a schema for the personalized diet form
-const personalFormSchema = new mongoose.Schema({
-  fullName: String,
-  phoneNumber: String,
-  emailAddress: String,
-  mealsPerDay: String,
-  mealsText: String,
-  snacksPerDay: String,
-  snacksText: String,
-  mealTimes: {
-    breakfast: { time: String, ampm: String },
-    lunch: { time: String, ampm: String },
-    dinner: { time: String, ampm: String },
-  },
+// Define the schema for the diet form
+const dietFormSchema = new mongoose.Schema({
+  abw: { type: Number, required: true },
+  activityLevel: { type: String, required: true },
+  kidneyCondition: { type: String, required: true },
+  dietType: { type: String, required: true },
+  calories: { type: Number },
+  protein: { type: Number },
+  fat: { type: Number },
+  carbs: { type: Number },
+  potassium: { type: Number },
+  phosphorus: { type: Number },
+  guidelines: { type: String },
 });
 
-// Create a model for the diet form
-const personalinfo = mongoose.model('personalinfo', personalFormSchema);
-module.exports = personalinfo;
+// Create a DietForm model
+const DietForm = mongoose.model('personalpiechat', dietFormSchema);
+
+module.exports = DietForm;

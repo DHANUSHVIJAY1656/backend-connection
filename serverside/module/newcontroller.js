@@ -1,9 +1,9 @@
-const DietForm = require("../Controllers/Newcontroller");
+const DietForm = require("../Controllers/Newcontroller"); 
 
 const DietFormController = async (req, res) => {
   try {
     console.log("Incoming Request Body:", req.body);
-
+    
     const formData = new DietForm(req.body);
     const savedData = await formData.save();
 
@@ -12,8 +12,8 @@ const DietFormController = async (req, res) => {
       data: savedData,
     });
   } catch (error) {
-    console.error("Error saving form data:", error);
-    res.status(400).json({
+    console.error("Error saving form data:", error); 
+    res.status(422).json({  
       message: "Validation Error",
       error: error.message,
     });
