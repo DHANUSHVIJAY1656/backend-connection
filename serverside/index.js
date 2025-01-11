@@ -158,7 +158,7 @@ app.get("/api/uploaded-reports", (req, res) => {
   });
 });
 
-app.post("/api/upload-report", upload.single("report"), (req, res) => {
+app.post("/api/upload-reports", upload.single("report"), (req, res) => {
   if (req.file) {
     res
       .status(200)

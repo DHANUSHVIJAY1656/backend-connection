@@ -13,8 +13,12 @@
     "react": "^19.0.0",
     "react-beautiful-dnd": "^13.1.1",
     "react-bootstrap": "^2.10.7",
+    "react-dnd": "^16.0.1",
+    "react-dnd-html5-backend": "^16.0.1",
     "react-dom": "^19.0.0",
+    "react-dropzone": "^14.3.5",
     "react-scripts": "5.0.1",
+    "react-tooltip": "^5.28.0",
     "recharts": "^2.15.0"
   },
   "scripts": {

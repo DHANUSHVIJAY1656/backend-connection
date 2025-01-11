@@ -97,3 +97,37 @@ button{
   border: 1px solid #07c5e7;
 }
 
+/* Example for layout and chart styling */
+.App {
+  padding: 20px;
+  font-family: Arial, sans-serif;
+}
+
+.section {
+  margin-bottom: 20px;
+}
+
+button {
+  margin-top: 10px;
+  background-color: #007bff;
+  color: white;
+  padding: 10px;
+  border: none;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #0056b3;
+}
+
+.pie-chart {
+  width: 100%;
+  height: 200px;
+  background-color: #f4f4f4;
+}
+
+.progress-bar {
+  width: 100%;
+  height: 30px;
+  background-color: #ff9900;
+}
