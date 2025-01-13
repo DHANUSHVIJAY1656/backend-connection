@@ -1,24 +1,29 @@
 const mongoose = require('mongoose');
 
-const patientSchema = new mongoose.Schema({
-  name: String,
-  age: Number,
-  gender: String,
-  weight: Number,
-  heightCm: Number,
-  heightFeet: Number,
-  heightInches: Number,
-  dietType: String,
-  activityLevel: String,
-  kidneyDisease: String,
-  comorbidities: [String],
-  idealWeight: Number,
-  adjustedWeight: Number,
-  bmi: Number,
-  bmiCategory: String,
-  weightDifference: Number,
+const dietSchema = new mongoose.Schema({
+  name: { type: String, required: true },
+  age: { type: Number, required: true },
+  gender: { type: String, required: true },
+  weight: { type: Number, required: true },
+  heightCm: { type: Number },
+  heightFt: { type: Number },
+  heightIn: { type: Number },
+  heightUnit: { type: String, default: "cm" },
+  dietType: { type: String, required: true },
+  subDietType: { type: String },
+  activityLevel: { type: String, required: true },
+  hasKidneyDisease: { type: Boolean, required: true },
+  kidneyCondition: { type: String },
+  otherConditions: { type: [String] },
+  otherConditionDetails: { type: String },
+  calories: { type: Number, required: true }, // Ensure calories is defined
+  idealWeight: { type: Number },
+  adjustedWeight: { type: Number },
+  bmi: { type: Number },
+  weightDifference: { type: Number },
 });
 
-const Patient = mongoose.model('Patient', patientSchema);
 
-module.exports = Patient;
+module.exports = mongoose.model('Diets', dietSchema);
+
+// module.exports = Patient;

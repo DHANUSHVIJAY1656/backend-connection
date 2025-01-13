@@ -4,7 +4,7 @@ import DietRecommendation from "./DietRecommendation";
 import DietChartDownload from "./DietChartDownload";
 
 const Diet = () => {
-  const [condition, setCondition] = useState("CKD"); // Example condition: CKD, Dialysis, or Transplant
+  const [condition] = useState("CKD"); // Removed 'setCondition'
   const calories = 2200;  // Example for demo purposes
   const protein = 60;     // Example for demo purposes
   const fat = 73;         // Example for demo purposes
@@ -20,4 +20,3 @@ const Diet = () => {
 };
 
 export default Diet;
-
