@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import NutrientBreakdown from "./NutrientBreakdown";
 import DietRecommendation from "./DietRecommendation";
-import DietChartDownload from "./DietChartDownload";
+// import DietChartDownload from "./DietChartDownload";
 
 const Diet = () => {
   const [condition] = useState("CKD"); // Removed 'setCondition'
@@ -14,7 +14,7 @@ const Diet = () => {
     <div className="App">
       <NutrientBreakdown calories={calories} protein={protein} fat={fat} carbs={carbs} />
       <DietRecommendation condition={condition} />
-      <DietChartDownload calories={calories} protein={protein} dietType="Non-Veg" />
+      {/* <DietChartDownload calories={calories} protein={protein} dietType="Non-Veg" /> */}
     </div>
   );
 };

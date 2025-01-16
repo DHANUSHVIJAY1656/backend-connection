@@ -1,7 +1,6 @@
 import React, { useState } from "react";
-// import axios from "axios";
-import { Tooltip } from "react-tooltip";
 import "react-tooltip/dist/react-tooltip.css";
+import DietChartDownload from "./DietChartDownload";
 
 const NutrientBreakdown = () => {
   // Declare the state variables
@@ -21,32 +20,6 @@ const NutrientBreakdown = () => {
     fat: 0,
     carbs: 0,
   });
-  const backendHandler = async (data) => {
-    return new Promise((resolve, reject) => {
-      try {
-        const { weight, height, age, gender, results } = data;
-
-        if (!weight || !height || !age || !gender) {
-          return reject({ error: "Missing required fields" });
-        }
-
-        console.log("Simulating backend data save:", {
-          weight,
-          height,
-          age,
-          gender,
-          results,
-        });
-
-        // Simulate backend delay
-        setTimeout(() => {
-          resolve({ message: "Data saved successfully" });
-        }, 1000);
-      } catch (error) {
-        reject({ error: "Internal Server Error" });
-      }
-    });
-  };
 
   // BMI, IBW, ABW calculations
   const calculateResults = () => {
@@ -69,9 +42,9 @@ const NutrientBreakdown = () => {
     const calories = Math.round(
       10 * weight + 6.25 * heightInMeters * 100 - 5 * age + (gender === "Male" ? 5 : -161)
     );
-    const protein = Math.round(calories * 0.2 / 4);
-    const fat = Math.round(calories * 0.3 / 9);
-    const carbs = Math.round(calories * 0.5 / 4);
+    const protein = Math.round((calories * 0.2) / 4);
+    const fat = Math.round((calories * 0.3) / 9);
+    const carbs = Math.round((calories * 0.5) / 4);
 
     setResults({
       bmi: bmi.toFixed(1),
@@ -88,23 +61,46 @@ const NutrientBreakdown = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
   
-   
-    calculateResults();
-    
-      try {
-        
-        const response = await backendHandler({url: 'http://localhost:5000/api/nutrients',
+    calculateResults(); // Calculate BMI, IBW, ABW, and nutrients
+  
+    try {
+      const response = await fetch("http://localhost:5000/api/nutrients", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
           weight,
           height: heightInMeters,
           age,
           gender,
-          results,
-        });
-        console.log(response.message);
-      } catch (error) {
-        console.error("Error saving data:", error);
+          bmi: results.bmi,
+          ibw: results.ibw,
+          abw: results.abw,
+          weightDiff: results.weightDiff,
+          calories: results.calories,
+          protein: results.protein,
+          fat: results.fat,
+          carbs: results.carbs,
+        }),
+      });
+  
+      if (response.ok) {
+        const responseData = await response.json();
+        console.log(responseData.message);
+        alert("Data submitted successfully!");
+      } else {
+        const errorData = await response.json();
+        console.error("Error submitting data:", errorData);
+        alert("Failed to submit data.");
       }
-    };
+    } catch (error) {
+      console.error("Error submitting data:", error);
+      alert("An error occurred while submitting data.");
+    }
+  };
+  
+  
   
 
   return (
@@ -142,10 +138,7 @@ const NutrientBreakdown = () => {
         <br />
         <label>
           Gender:
-          <select
-            value={gender}
-            onChange={(e) => setGender(e.target.value)}
-          >
+          <select value={gender} onChange={(e) => setGender(e.target.value)}>
             <option value="">Select Gender</option>
             <option value="Male">Male</option>
             <option value="Female">Female</option>
@@ -172,54 +165,16 @@ const NutrientBreakdown = () => {
         )}
       </div>
 
-      {/* Tooltip Sections */}
-      <div className="section">
-        <h3>Total Calories (Energy)</h3>
-        <p>Your recommended daily energy intake is approximately 2000 kcal.</p>
-        <div
-          className="pie-chart"
-          style={{ width: "100%", height: "200px", backgroundColor: "#ccc" }}
-        ></div>
-        <span data-tip data-for="calories-tooltip">ℹ️</span>
-        <Tooltip id="calories-tooltip" place="top" effect="solid">
-          Calories are calculated based on your Adjusted Body Weight (ABW) and activity level.
-        </Tooltip>
-      </div>
-
-      <div className="section">
-        <h3>Protein Requirement</h3>
-        <p>Your recommended daily protein intake is {results.protein}g/day.</p>
-        <div
-          className="progress-bar"
-          style={{ width: "100%", height: "30px", backgroundColor: "#0d6efd" }}
-        ></div>
-        <span data-tip data-for="protein-tooltip">ℹ️</span>
-        <Tooltip id="protein-tooltip" place="top" effect="solid">
-          Protein intake is based on your kidney condition. For specialized diets, a supervised plan is recommended.
-        </Tooltip>
-      </div>
-
-      <div className="section">
-        <h3>Fat Intake</h3>
-        <p>Your recommended daily fat intake is {results.fat}g/day.</p>
-        <div className="pie-chart">{/* Fat Pie chart logic here */}</div>
-        <span data-tip data-for="fat-tooltip">ℹ️</span>
-        <Tooltip id="fat-tooltip" place="top" effect="solid">
-          Focus on unsaturated fats like olive oil and nuts while limiting saturated fats.
-        </Tooltip>
-      </div>
-
-      <div className="section">
-        <h3>Carbohydrate Intake</h3>
-        <p>Your recommended daily carbohydrate intake is {results.carbs}g/day.</p>
-        <div className="progress-bar"></div>
-        <span data-tip data-for="carbs-tooltip">ℹ️</span>
-        <Tooltip id="carbs-tooltip" place="top" effect="solid">
-          Carbs should come from complex sources like whole grains, vegetables, and legumes.
-        </Tooltip>
-      </div>
+      {/* Diet Chart Download Component */}
+      {results.calories > 0 && (
+        <DietChartDownload
+          calories={results.calories}
+          protein={results.protein}
+          dietType="Balanced Diet" 
+        />
+      )}
     </div>
   );
 };
-  
-  export default NutrientBreakdown;
+
+export default NutrientBreakdown;

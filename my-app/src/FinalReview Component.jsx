@@ -1,117 +1,65 @@
-// import React from 'react';
-// import axios from 'axios';
-// function FinalReview({ personalInfo, mealInfo, labResults }) {
-//   const handleSubmit = async () => {
-//     const data = {
-//       personalInfo,
-//       mealInfo,
-//       labResults,
-//     };
-
-//     try {
- 
-//       const response = await axios.post('http://localhost:5000/api/lab-results', data);
-//       console.log('Response from backend:', response.data);
-//       alert('Your personalized diet chart is generated!');
-//     } catch (error) {
-     
-//       console.error('Error generating diet plan:', error);
-//       alert('Failed to generate diet plan. Please try again.');
-//     }
-//   };
-//   return (
-//     <div>
-//       <h2>Review Your Information</h2>
-//       <h3>Personal Info</h3>
-//       <p>Name: {personalInfo.name}</p>
-//       <p>Phone: {personalInfo.phone}</p>
-//       <p>Email: {personalInfo.email}</p>
-
-//       <h3>Meal Distribution</h3>
-//       <p>Meal Order: {mealInfo.mealOrder.join(', ')}</p>
-
-//       <h3>Lab Results</h3>
-//       <p>Hemoglobin: {labResults.hemoglobin}</p>
-//       <p>Serum Creatinine: {labResults.creatinine}</p>
-//       <p>Potassium: {labResults.potassium}</p>
-//       <p>Phosphorus: {labResults.phosphorus}</p>
-//       <p>iPTH: {labResults.ipth}</p>
-//       <p>Vitamin D: {labResults.vitaminD}</p>
-
-//       <button onClick={handleSubmit}>Generate Diet Plan</button>
-//     </div>
-//   );
-// }
-
-// export default FinalReview;
-
-
-
-
-
-
-
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 
-function FinalReview({ personalInfo, mealInfo, labResults }) {
-  const [isDataLoaded, setIsDataLoaded] = useState(false);
+function FinalReview({ personalInfo, mealOrder, labResults, onSubmit }) {
+  const [fetchedData, setFetchedData] = useState(null);
 
+  // Fetch the final data when the component mounts
   useEffect(() => {
-    if (personalInfo && mealInfo && labResults) {
-      console.log('Data loaded:', { personalInfo, mealInfo, labResults });
-      setIsDataLoaded(true);
-    } else {
-      console.log('Waiting for data...', { personalInfo, mealInfo, labResults });
-    }
-  }, [personalInfo, mealInfo, labResults]);
+    const fetchData = async () => {
+      try {
+        const response = await axios.get('http://localhost:5000/api/final-submission');
+        setFetchedData(response.data.data);
+        console.log('Fetched data:', response.data);
+      } catch (error) {
+        console.error('Error fetching final data:', error);
+      }
+    };
+
+    fetchData();
+  }, []);
 
   const handleSubmit = async () => {
-    const data = {
+    const finalData = {
       personalInfo,
-      mealInfo,
+      mealOrder,
       labResults,
     };
 
     try {
-      const response = await axios.post('http://localhost:5000/api/final', data);
-      console.log('Response from backend:', response.data);
-      alert('Your personalized diet chart is generated!');
+      const response = await axios.post('http://localhost:5000/api/final-submission', finalData);
+      console.log('Final submission response:', response.data);
+      // Handle success (e.g., redirect or show success message)
     } catch (error) {
-      console.error('Error generating diet plan:', error);
-      alert('Failed to generate diet plan. Please try again.');
+      console.error('Error submitting final data:', error);
     }
   };
-
-  // If data is not loaded, display a loading message
-  if (!isDataLoaded) {
-    return <div>Loading...</div>;
-  }
 
   return (
     <div>
       <h2>Review Your Information</h2>
 
-      {/* Personal Info */}
-      <h3>Personal Info</h3>
-      <p>Name: {personalInfo?.name || 'N/A'}</p>
-      <p>Phone: {personalInfo?.phone || 'N/A'}</p>
-      <p>Email: {personalInfo?.email || 'N/A'}</p>
+      {fetchedData && (
+        <div>
+          <h3>Personal Information</h3>
+          <p><strong>Name:</strong> {fetchedData.personalInfo.name}</p>
+          <p><strong>Phone:</strong> {fetchedData.personalInfo.phone}</p>
+          <p><strong>Email:</strong> {fetchedData.personalInfo.email}</p>
 
-      {/* Meal Distribution */}
-      <h3>Meal Distribution</h3>
-      <p>Meal Order: {mealInfo?.mealOrder?.join(', ') || 'N/A'}</p>
+          <h3>Meal Distribution</h3>
+          <p><strong>Meal Order:</strong> {fetchedData.mealOrder.join(', ')}</p>
 
-      {/* Lab Results */}
-      <h3>Lab Results</h3>
-      <p>Hemoglobin: {labResults?.hemoglobin || 'N/A'}</p>
-      <p>Serum Creatinine: {labResults?.creatinine || 'N/A'}</p>
-      <p>Potassium: {labResults?.potassium || 'N/A'}</p>
-      <p>Phosphorus: {labResults?.phosphorus || 'N/A'}</p>
-      <p>iPTH: {labResults?.ipth || 'N/A'}</p>
-      <p>Vitamin D: {labResults?.vitaminD || 'N/A'}</p>
+          <h3>Lab Results</h3>
+          <p><strong>Hemoglobin:</strong> {fetchedData.labResults.hemoglobin}</p>
+          <p><strong>Serum Creatinine:</strong> {fetchedData.labResults.creatinine}</p>
+          <p><strong>Potassium:</strong> {fetchedData.labResults.potassium}</p>
+          <p><strong>Phosphorus:</strong> {fetchedData.labResults.phosphorus}</p>
+          <p><strong>iPTH:</strong> {fetchedData.labResults.ipth}</p>
+          <p><strong>Vitamin D:</strong> {fetchedData.labResults.vitaminD}</p>
 
-      <button onClick={handleSubmit}>Generate Diet Plan</button>
+          <button onClick={handleSubmit}>Submit</button>
+        </div>
+      )}
     </div>
   );
 }

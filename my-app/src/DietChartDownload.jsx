@@ -9,7 +9,10 @@ const DietChartDownload = ({ calories, protein, dietType }) => {
   return (
     <div>
       <h3>Download Your Generic Diet Chart</h3>
-      <p>Your recommended daily intake is {calories} kcal with {protein}g of protein. Diet Type: {dietType}</p>
+      <p>
+        Your recommended daily intake is {calories} kcal with {protein}g of protein. Diet Type:{" "}
+        {dietType}
+      </p>
       <button onClick={downloadDietChart}>Download Diet Chart</button>
     </div>
   );

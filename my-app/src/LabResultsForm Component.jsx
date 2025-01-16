@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useDropzone } from 'react-dropzone';
 import axios from 'axios';
 
-function LabResultsForm({ onSubmit, onNext, onPrev }) {
+function LabResultsForm() {
   const [labResults, setLabResults] = useState({
     hemoglobin: '',
     creatinine: '',
@@ -16,12 +16,9 @@ function LabResultsForm({ onSubmit, onNext, onPrev }) {
   const [errorMessage, setErrorMessage] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // useDropzone hook for handling file uploads
   const { getRootProps, getInputProps } = useDropzone({
-    onDrop: (acceptedFiles) => {
-      setFiles(acceptedFiles);
-    },
-    accept: '.pdf, .doc, .docx, .jpg, .png', // Only allow specific file types
+    onDrop: (acceptedFiles) => setFiles(acceptedFiles),
+    accept: '.pdf, .doc, .docx, .jpg, .png',
   });
 
   const handleChange = (e) => {
@@ -30,48 +27,46 @@ function LabResultsForm({ onSubmit, onNext, onPrev }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setIsSubmitting(true); // Disable the form while submitting
+    setIsSubmitting(true);
 
     const formData = new FormData();
-    Object.entries(labResults).forEach(([key, value]) => {
-      formData.append(key, value);
-    });
+    Object.entries(labResults).forEach(([key, value]) => formData.append(key, value));
+    files.forEach((file) => formData.append('reports', file));
 
-    // Append files to FormData
-    files.forEach((file) => {
-      formData.append('reports', file);
-    });
+    console.log('Submitting FormData:');
+    for (let pair of formData.entries()) {
+      console.log(pair[0], pair[1]);
+    }
 
     try {
       const response = await axios.post('http://localhost:5000/api/lab-results', formData, {
         headers: {
-          'Content-Type': 'multipart/form-data', // Tell axios to send multipart data
+          'Content-Type': 'multipart/form-data',
         },
       });
 
       if (response.status === 200) {
-        // If submission is successful, call the onSubmit and onNext functions
-        onSubmit({ labResults, files });
-        onNext();
+        alert('Lab results submitted successfully!');
       }
     } catch (error) {
       console.error('Error submitting lab results:', error);
       setErrorMessage('Failed to submit lab results. Please try again.');
     } finally {
-      setIsSubmitting(false); // Enable the form again after submission attempt
+      setIsSubmitting(false);
     }
   };
 
   return (
     <form onSubmit={handleSubmit}>
       <h2>Enter Lab Results</h2>
-      
+
       <label>Hemoglobin:</label>
       <input
         type="number"
         name="hemoglobin"
         value={labResults.hemoglobin}
         onChange={handleChange}
+        required
       />
 
       <label>Serum Creatinine:</label>
@@ -80,6 +75,7 @@ function LabResultsForm({ onSubmit, onNext, onPrev }) {
         name="creatinine"
         value={labResults.creatinine}
         onChange={handleChange}
+        required
       />
 
       <label>Potassium:</label>
@@ -88,6 +84,7 @@ function LabResultsForm({ onSubmit, onNext, onPrev }) {
         name="potassium"
         value={labResults.potassium}
         onChange={handleChange}
+        required
       />
 
       <label>Phosphorus:</label>
@@ -96,6 +93,7 @@ function LabResultsForm({ onSubmit, onNext, onPrev }) {
         name="phosphorus"
         value={labResults.phosphorus}
         onChange={handleChange}
+        required
       />
 
       <label>iPTH:</label>
@@ -104,6 +102,7 @@ function LabResultsForm({ onSubmit, onNext, onPrev }) {
         name="ipth"
         value={labResults.ipth}
         onChange={handleChange}
+        required
       />
 
       <label>25-OH Vitamin D:</label>
@@ -112,33 +111,24 @@ function LabResultsForm({ onSubmit, onNext, onPrev }) {
         name="vitaminD"
         value={labResults.vitaminD}
         onChange={handleChange}
+        required
       />
 
-      {/* Dropzone section for file upload */}
-      <div {...getRootProps()}>
+      <div {...getRootProps()} style={{ border: '1px dashed #ccc', padding: '10px', marginTop: '10px' }}>
         <input {...getInputProps()} />
-        <button type="button">Upload Medical Reports</button>
-      </div>
-      
-      {/* Display uploaded files */}
-      <div>
-        {files.length > 0 && (
-          <ul>
-            {files.map((file, index) => (
-              <li key={index}>{file.name}</li>
-            ))}
-          </ul>
-        )}
+        <p>Drag and drop files here, or click to select files</p>
       </div>
 
-      {/* Display error message if any */}
+      <ul>
+        {files.map((file, index) => (
+          <li key={index}>{file.name}</li>
+        ))}
+      </ul>
+
       {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
 
-      <button type="button" onClick={onPrev} disabled={isSubmitting}>
-        Back
-      </button>
       <button type="submit" disabled={isSubmitting}>
-        {isSubmitting ? 'Submitting...' : 'Next'}
+        {isSubmitting ? 'Submitting...' : 'Submit'}
       </button>
     </form>
   );

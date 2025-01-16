@@ -15,16 +15,18 @@ function PersonalInfoForm({ onSubmit, onNext }) {
   
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+  
     try {
       const response = await axios.post('http://localhost:5000/api/personal-info', personalInfo);
       console.log(response.data);
+      onSubmit(personalInfo);
       onNext(); 
     } catch (error) {
       console.error('Error submitting personal info:', error);
       setErrorMessage('Failed to submit personal information. Please try again.');
     }
   };
+  
 
 
   return (

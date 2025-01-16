@@ -1,8 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import axios from 'axios';
-
 const KidneyDietForm = () => {
-  const [formData, setFormData ] = useState({
+  const [formData, setFormData] = useState({
     name: "",
     age: "",
     gender: "",
@@ -12,24 +11,12 @@ const KidneyDietForm = () => {
     heightIn: "",
     heightUnit: "cm",
     dietType: "",
-    subDietType: "",
-    flexSubOption: "",
+    dietSubType: "",
+    flexOption: "",
     activityLevel: "",
-    hasKidneyDisease: "",
+    kidneyDisease: "",
     kidneyCondition: "",
-    otherConditions: [],
-    otherConditionDetails: "",
-    idealWeight: null,
-    adjustedWeight: null,
-    bmi: null,
-    weightDifference: null,
-  });
-
-  const [results, setResults] = useState({
-    bmi: null,
-    ibw: null,
-    abw: null,
-    weightDiff: null,
+    comorbidities: [],
   });
 
   const handleChange = (e) => {
@@ -37,86 +24,42 @@ const KidneyDietForm = () => {
     if (type === "checkbox") {
       setFormData((prev) => ({
         ...prev,
-        otherConditions: checked
-          ? [...prev.otherConditions, value]
-          : prev.otherConditions.filter((item) => item !== value),
+        comorbidities: checked
+          ? [...prev.comorbidities, value]
+          : prev.comorbidities.filter((item) => item !== value),
       }));
     } else {
-      setFormData((prev) => ({ ...prev, [name]: value }));
+      setFormData((prev) => ({
+        ...prev,
+        [name]: value,
+      }));
     }
   };
 
-  const calculateResults = () => {
-    const weight = parseFloat(formData.weight);
-    let heightInMeters;
-  
-    // Convert height to meters
-    if (formData.heightUnit === "cm") {
-      heightInMeters = parseFloat(formData.heightCm) / 100;
-    } else {
-      heightInMeters =
-        (parseFloat(formData.heightFt) * 12 + parseFloat(formData.heightIn)) *
-        0.0254;
-    }
-  
-    const bmi = weight / heightInMeters ** 2;
-  
-    const ibw =
-      formData.gender === "Male"
-        ? parseFloat(formData.heightCm || 0) - 100
-        : parseFloat(formData.heightCm || 0) - 105;
-  
-    const abw = bmi >= 18.5 && bmi <= 24.9 ? ibw : ibw + 0.25 * (weight - ibw);
-  
-    const weightDiff = weight - abw;
-  
-    // Example calorie calculation (Basal Metabolic Rate Formula, replace it with your specific logic)
-    const calories = Math.round(
-      10 * weight + 6.25 * heightInMeters * 100 - 5 * formData.age +
-        (formData.gender === "Male" ? 5 : -161)
-    );
-  
-    setResults({
-      bmi: bmi.toFixed(1),
-      ibw: ibw.toFixed(1),
-      abw: abw.toFixed(1),
-      weightDiff: weightDiff.toFixed(1),
-    });
-  
-    setFormData((prev) => ({
-      ...prev,
-      calories, // Add calculated calories to formData
-    }));
-  };
   const handleSubmit = async (e) => {
     e.preventDefault();
-    calculateResults(); 
-    
     try {
-      const response = await axios.post('http://localhost:5000/api/diet', formData);
-      console.log('Data submitted successfully:', response.data);
+      const response = await axios.post("http://localhost:5000/api/kidney-diet", formData);
+      console.log("Form Data Submitted:", response.data);
+      alert("Form submitted successfully!");
     } catch (error) {
-      if (error.response) {
-        console.error('Response error:', error.response.data); // Backend error
-      } else if (error.request) {
-        console.error('No response received:', error.request); // Network error
-      } else {
-        console.error('Axios error:', error.message); // Other errors
-      }
+      console.error("Error submitting form:", error);
+      alert("Error submitting form.");
     }
   };
-  
-  
   
   return (
     <form onSubmit={handleSubmit}>
       <h1>Your Personalized Kidney-Friendly Diet Plan</h1>
       <p>
         Managing kidney health through diet can feel overwhelming, but you're
-        not alone...
+        not alone. At KidneyNeeds, we understand the challenges of balancing
+        your nutritional needs with the restrictions that come with kidney
+        disease.
       </p>
 
-      <h2>1. Personal Information</h2>
+      {/* Personal Information */}
+      <h2>Personal Information</h2>
       <label>
         Name:
         <input
@@ -127,49 +70,51 @@ const KidneyDietForm = () => {
           required
         />
       </label>
+      <br />
+
       <label>
         Age:
         <input
           type="number"
           name="age"
-          value={formData.age}
-          onChange={handleChange}
           min="18"
           max="100"
+          value={formData.age}
+          onChange={handleChange}
           required
         />
       </label>
+      <br />
+
       <label>
         Gender:
-        <label>
-          <input
-            type="radio"
-            name="gender"
-            value="Male"
-            onChange={handleChange}
-          />{" "}
-          Male
-        </label>
-        <label>
-          <input
-            type="radio"
-            name="gender"
-            value="Female"
-            onChange={handleChange}
-          />{" "}
-          Female
-        </label>
-        <label>
-          <input
-            type="radio"
-            name="gender"
-            value="Other"
-            onChange={handleChange}
-          />{" "}
-          Other
-        </label>
+        <input
+          type="radio"
+          name="gender"
+          value="Male"
+          checked={formData.gender === "Male"}
+          onChange={handleChange}
+        />{" "}
+        Male
+        <input
+          type="radio"
+          name="gender"
+          value="Female"
+          checked={formData.gender === "Female"}
+          onChange={handleChange}
+        />{" "}
+        Female
+        <input
+          type="radio"
+          name="gender"
+          value="Other"
+          checked={formData.gender === "Other"}
+          onChange={handleChange}
+        />{" "}
+        Other
       </label>
-      <br></br>
+      <br />
+
       <label>
         Weight (kg):
         <input
@@ -180,169 +125,167 @@ const KidneyDietForm = () => {
           required
         />
       </label>
-      <label>
-        Height:
-        <select
-          name="heightUnit"
-          value={formData.heightUnit}
-          onChange={handleChange}
-        >
-          <option value="cm">Centimeters</option>
-          <option value="ft">Feet/Inches</option>
-        </select>
-        {formData.heightUnit === "cm" ? (
-          <input
-            type="number"
-            name="heightCm"
-            value={formData.heightCm}
-            onChange={handleChange}
-            required
-          />
-        ) : (
-          <>
-            <input
-              type="number"
-              name="heightFt"
-              placeholder="Feet"
-              value={formData.heightFt}
-              onChange={handleChange}
-              required
-            />
-            <input
-              type="number"
-              name="heightIn"
-              placeholder="Inches"
-              value={formData.heightIn}
-              onChange={handleChange}
-              required
-            />
-          </>
-        )}
-      </label>
+      <br />
 
-      <h2>2. Diet Type</h2>
+      <h3>Height</h3>
       <label>
-        Diet Type:
-        <select
-          name="dietType"
-          value={formData.dietType}
+        <input
+          type="radio"
+          name="heightUnit"
+          value="cm"
+          checked={formData.heightUnit === "cm"}
           onChange={handleChange}
-          required
-        >
-          <option value="">Select...</option>
+        />{" "}
+        Centimeters:
+        <input
+          type="number"
+          name="heightCm"
+          value={formData.heightCm}
+          onChange={handleChange}
+          disabled={formData.heightUnit !== "cm"}
+        />
+      </label>
+      <br />
+      <label>
+        <input
+          type="radio"
+          name="heightUnit"
+          value="ft"
+          checked={formData.heightUnit === "ft"}
+          onChange={handleChange}
+        />{" "}
+        Feet and Inches:
+        <input
+          type="number"
+          name="heightFt"
+          value={formData.heightFt}
+          onChange={handleChange}
+          disabled={formData.heightUnit !== "ft"}
+        />
+        Feet
+        <input
+          type="number"
+          name="heightIn"
+          value={formData.heightIn}
+          onChange={handleChange}
+          disabled={formData.heightUnit !== "ft"}
+        />
+        Inches
+      </label>
+      <br />
+
+      {/* Diet Type */}
+      <h2>Diet Type</h2>
+      <label>
+        Select Diet Type:
+        <select name="dietType" value={formData.dietType} onChange={handleChange} required>
+          <option value="">-- Select --</option>
           <option value="Vegetarian">Vegetarian</option>
           <option value="Non-Vegetarian">Non-Vegetarian</option>
+          <option value="Flexitarian">Flexitarian</option>
         </select>
       </label>
+      <br />
+
       {formData.dietType === "Vegetarian" && (
-        <select
-          name="subDietType"
-          value={formData.subDietType}
-          onChange={handleChange}
-          required
-        >
-          <option value="">Select Sub-type...</option>
-          <option value="Lacto">
-            Lacto Vegetarian (Includes dairy, but no eggs)
-          </option>
-          <option value="Ovo">
-            Ovo Vegetarian (Includes eggs, but no dairy)
-          </option>
-          <option value="vegan">Vegan (Excludes all animal products)</option>
-        </select>
+        <label>
+          Vegetarian Sub-Type:
+          <select
+            name="dietSubType"
+            value={formData.dietSubType}
+            onChange={handleChange}
+          >
+            <option value="">-- Select --</option>
+            <option value="Lacto Vegetarian">Lacto Vegetarian</option>
+            <option value="Ovo Vegetarian">Ovo Vegetarian</option>
+            <option value="Lacto-Ovo Vegetarian">Lacto-Ovo Vegetarian</option>
+            <option value="Vegan">Vegan</option>
+          </select>
+        </label>
       )}
+
       {formData.dietType === "Non-Vegetarian" && (
-        <select
-          name="subDietType"
-          value={formData.subDietType}
-          onChange={handleChange}
-          required
-        >
-          <option value="">Select Sub-type...</option>
-          <option value="Pescatarian">
-            Pescatarian (Includes fish and seafood, but no other meat)
-          </option>
-          <option value="Poultry-based">
-            {" "}
-            Poultry-based (Includes chicken, turkey, etc.)
-          </option>
-          <option value="Red Meat_based">
-            Red Meat-based (Includes beef, lamb, pork, etc.)
-          </option>
-          <option value="Flexitarion">
-            Flexitarion (Mainly plant-based but occasionally includes meat,
-            poultry, or fish)
-          </option>
-        </select>
+        <label>
+          Non-Vegetarian Sub-Type:
+          <select
+            name="dietSubType"
+            value={formData.dietSubType}
+            onChange={handleChange}
+          >
+            <option value="">-- Select --</option>
+            <option value="Pescatarian">Pescatarian</option>
+            <option value="Poultry-based">Poultry-based</option>
+            <option value="Red Meat-based">Red Meat-based</option>
+          </select>
+        </label>
       )}
+
+      {formData.dietType === "Flexitarian" && (
+        <label>
+          Flexitarian Pattern:
+          <select
+            name="flexOption"
+            value={formData.flexOption}
+            onChange={handleChange}
+          >
+            <option value="">-- Select --</option>
+            <option value="Mostly Plant-Based with Occasional Meat">
+              Mostly Plant-Based with Occasional Meat
+            </option>
+            <option value="Mostly Plant-Based with Occasional Fish/Seafood">
+              Mostly Plant-Based with Occasional Fish/Seafood
+            </option>
+            <option value="Mostly Plant-Based with Occasional Poultry">
+              Mostly Plant-Based with Occasional Poultry
+            </option>
+            <option value="Occasional Meat, Fish, and Poultry">
+              Occasional Meat, Fish, and Poultry
+            </option>
+          </select>
+        </label>
+      )}
+      <br />
+
+      {/* Activity Level */}
       <h2>Activity Level</h2>
       <label>
-        <input
-          type="radio"
+        <select
           name="activityLevel"
-          value="Sedentary"
-          checked={formData.activityLevel === "Sedentary"}
+          value={formData.activityLevel}
           onChange={handleChange}
-        />{" "}
-        Sedentary
+        >
+          <option value="">-- Select --</option>
+          <option value="Sedentary">Sedentary</option>
+          <option value="Mildly Active">Mildly Active</option>
+          <option value="Moderately Active">Moderately Active</option>
+          <option value="Very Active">Very Active</option>
+        </select>
       </label>
-      <br></br>
-      <label>
-        <input
-          type="radio"
-          name="activityLevel"
-          value="Mildly Active"
-          checked={formData.activityLevel === "Mildly Active"}
-          onChange={handleChange}
-        />{" "}
-        Mildly Active
-      </label>
-      <br></br>
-      <label>
-        <input
-          type="radio"
-          name="activityLevel"
-          value="Moderately Active"
-          checked={formData.activityLevel === "Moderately Active"}
-          onChange={handleChange}
-        />{" "}
-        Moderately Active
-      </label>
-      <br></br>
-      <label>
-        <input
-          type="radio"
-          name="activityLevel"
-          value="Very Active"
-          checked={formData.activityLevel === "Very Active"}
-          onChange={handleChange}
-        />{" "}
-        Very Active
-      </label>
-      <br></br>
+      <br />
 
-      <h2>Health Conditions</h2>
+      {/* Kidney Disease */}
+      <h2>Kidney Disease</h2>
       <label>
         Do you have kidney disease?
         <input
           type="radio"
-          name="hasKidneyDisease"
-          value="true"
-          checked={formData.hasKidneyDisease === "true"}
+          name="kidneyDisease"
+          value="Yes"
+          checked={formData.kidneyDisease === "Yes"}
           onChange={handleChange}
         />{" "}
         Yes
         <input
           type="radio"
-          name="hasKidneyDisease"
-          value="false"
-          checked={formData.hasKidneyDisease === "false"}
+          name="kidneyDisease"
+          value="No"
+          checked={formData.kidneyDisease === "No"}
           onChange={handleChange}
         />{" "}
         No
       </label>
-      <br></br>
-      {formData.hasKidneyDisease === "true" && (
+      <br />
+      {formData.kidneyDisease === "Yes" && (
         <label>
           Kidney Condition:
           <input
@@ -353,142 +296,62 @@ const KidneyDietForm = () => {
           />
         </label>
       )}
-      <br></br>
-      <label>Other Health Conditions:</label>
-      <br></br>
+      <br />
+
+      <h2>Other Health Conditions</h2>
       <label>
         <input
           type="checkbox"
-          name="otherConditions"
+          name="comorbidities"
           value="Diabetes"
-          checked={formData.otherConditions.includes("Diabetes")}
+          checked={formData.comorbidities.includes("Diabetes")}
           onChange={handleChange}
         />{" "}
         Diabetes
       </label>
-      <br></br>
       <label>
         <input
           type="checkbox"
-          name="otherConditions"
+          name="comorbidities"
           value="Hypertension"
-          checked={formData.otherConditions.includes("Hypertension")}
+          checked={formData.comorbidities.includes("Hypertension")}
           onChange={handleChange}
         />{" "}
         Hypertension
       </label>
-      <br></br>
       <label>
         <input
           type="checkbox"
-          name="otherConditions"
+          name="comorbidities"
           value="Gout"
-          checked={formData.otherConditions.includes("Gout")}
+          checked={formData.comorbidities.includes("Gout")}
           onChange={handleChange}
         />{" "}
         Gout
       </label>
-      <br></br>
       <label>
         <input
           type="checkbox"
-          name="otherConditions"
+          name="comorbidities"
           value="Cardiovascular Disease"
-          checked={formData.otherConditions.includes("Cardiovascular Disease")}
+          checked={formData.comorbidities.includes("Cardiovascular Disease")}
           onChange={handleChange}
         />{" "}
         Cardiovascular Disease
       </label>
-      <br></br>
       <label>
         <input
           type="checkbox"
-          name="otherConditions"
+          name="comorbidities"
           value="Other"
-          checked={formData.otherConditions.includes("Other")}
+          checked={formData.comorbidities.includes("Other")}
           onChange={handleChange}
         />{" "}
         Other
       </label>
-      <br></br>
-      <label>Name</label>
-      <input
-    type="text"
-    name="name"
-    value={formData.name}
-    onChange={handleChange}
-    placeholder="Enter name"
-  />
-  <label>carbs</label>
-  <input
-    type="number"
-    name="carbs"
-    value={formData.carbs}
-    onChange={handleChange}
-    placeholder="Enter carbs"
-  />
-  <label>fat</label>
-  <input
-    type="number"
-    name="fat"
-    value={formData.fat}
-    onChange={handleChange}
-    placeholder="Enter fat"
-  />
-  <label>protein</label>
-  <input
-    type="number"
-    name="protein"
-    value={formData.protein}
-    onChange={handleChange}
-    placeholder="Enter protein"
-  />
-  <label>calories</label>
-  <input
-    type="number"
-    name="calories"
-    value={formData.calories}
-    onChange={handleChange}
-    placeholder="Enter calories"
-  />
-
-      <h2>Results</h2>
+      <br />
 
       <button type="submit">Submit My Details</button>
-
-      {results.bmi && (
-        <div>
-          <h3>Your Results</h3>
-          <p>
-            <strong>BMI:</strong> {results.bmi}{" "}
-            <span title="BMI is calculated using your weight and height. A BMI in the range of 18.5–24.9 is considered normal weight.">
-              (i)
-            </span>
-          </p>
-          <p>
-            <strong>Ideal Body Weight (IBW):</strong> {results.ibw} kg{" "}
-            <span title="IBW is calculated using Broca’s formula based on your height and gender.">
-              (i)
-            </span>
-          </p>
-          <p>
-            <strong>Adjusted Body Weight (ABW):</strong> {results.abw} kg{" "}
-            <span title="ABW is calculated based on your Ideal Body Weight (IBW) and BMI. If your BMI is outside the normal range, we adjust the weight to provide a more accurate target.">
-              (i)
-            </span>
-          </p>
-          <p>
-            <strong>Weight Difference:</strong> {Math.abs(results.weightDiff)}{" "}
-            kg{" "}
-            {results.weightDiff > 0
-              ? `above your adjusted target weight.`
-              : `below your adjusted target weight.`}
-            <span title="This is the difference between your actual weight and adjusted target weight. Adjusting your weight towards this target can improve overall health.">
-              (i)
-            </span>
-          </p>
-        </div>
-      )}
     </form>
   );
 };

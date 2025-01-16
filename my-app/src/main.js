@@ -4,27 +4,40 @@ import MealDistribution from './MealDistribution Component';
 import LabResultsForm from './LabResultsForm Component';
 import FinalReview from './FinalReview Component';
 
-function App() {
-  const [step, setStep] = useState(1);
+function MultiStepForm() {
   const [personalInfo, setPersonalInfo] = useState({});
-  const [mealInfo, setMealInfo] = useState({});
+  const [mealOrder, setMealOrder] = useState([]);
   const [labResults, setLabResults] = useState({});
+  const [step, setStep] = useState(1);
 
-  const handleNextStep = () => setStep(step + 1);
-  const handlePrevStep = () => setStep(step - 1);
+  const handlePersonalInfoSubmit = (data) => {
+    setPersonalInfo(data);
+    setStep(2);  // Move to next step
+  };
 
-  const handlePersonalInfoChange = (info) => setPersonalInfo(info);
-  const handleMealInfoChange = (info) => setMealInfo(info);
-  const handleLabResultsChange = (results) => setLabResults(results);
+  const handleMealOrderSubmit = (data) => {
+    setMealOrder(data.mealOrder);
+    setStep(3);  // Move to next step
+  };
+
+  const handleLabResultsSubmit = (data) => {
+    setLabResults(data.labResults);
+    setStep(4);  // Move to Final Review
+  };
+
+  const handleFinalSubmit = (data) => {
+    // Final submission logic
+    console.log('Final data:', data);
+  };
 
   return (
-    <div className="container">
-      {step === 1 && <PersonalInfoForm onSubmit={handlePersonalInfoChange} onNext={handleNextStep} />}
-      {step === 2 && <MealDistribution onSubmit={handleMealInfoChange} onNext={handleNextStep} onPrev={handlePrevStep} />}
-      {step === 3 && <LabResultsForm onSubmit={handleLabResultsChange} onNext={handleNextStep} onPrev={handlePrevStep} />}
-      {step === 4 && <FinalReview personalInfo={personalInfo} mealInfo={mealInfo} labResults={labResults} />}
+    <div>
+      {step === 1 && <PersonalInfoForm onSubmit={handlePersonalInfoSubmit} onNext={() => setStep(2)} />}
+      {step === 2 && <MealDistribution onSubmit={handleMealOrderSubmit} onNext={() => setStep(3)} onPrev={() => setStep(1)} />}
+      {step === 3 && <LabResultsForm onSubmit={handleLabResultsSubmit} onNext={() => setStep(4)} onPrev={() => setStep(2)} />}
+      {step === 4 && <FinalReview personalInfo={personalInfo} mealOrder={mealOrder} labResults={labResults} onSubmit={handleFinalSubmit} />}
     </div>
   );
 }
 
-export default App;
+export default MultiStepForm;
