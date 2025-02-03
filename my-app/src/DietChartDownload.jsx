@@ -3,7 +3,7 @@ import React from "react";
 const DietChartDownload = ({ calories, protein, dietType }) => {
   const downloadDietChart = () => {
     // Logic for downloading the chart (You can use Blob, a PDF library, or generate an image)
-    alert("Downloading Diet Chart based on your preferences.");
+    alert(`Downloading a ${dietType} diet chart with ${calories} kcal and ${protein}g of protein.`);
   };
 
   return (

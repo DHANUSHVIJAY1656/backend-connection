@@ -1,50 +1,41 @@
-import React from 'react';
-import { Tooltip } from 'react-tooltip';
+import React, { useState } from "react";
+import DietChartDownload from "./DietChartDownload"; 
+import NutrientBreakdown from "./NutrientBreakdown";
+const Diet = () => {
+  const [condition] = useState("CKD"); // Example condition
+  const calories = 2200;  // Example calorie value
+  const protein = 60;     // Example protein value
+  const fat = 73;         // Example fat value
+  const carbs = 250;      // Example carbs value
 
-const DietRecommendation = ({ condition }) => {
+  // Recommendations based on condition
   const recommendations = {
-    CKD: (
-      <div>
-        <h3>Chronic Kidney Disease (CKD)</h3>
-        <p>Moderate protein intake is essential to prevent kidney strain.</p>
-        <p>Phosphorus and potassium levels need monitoring.</p>
-        <button data-tip data-for="ckd-tooltip">ℹ️</button>
-        <Tooltip id="ckd-tooltip" place="top" effect="solid">
-          Protein, phosphorus, and potassium management is crucial in CKD.
-        </Tooltip>
-      </div>
-    ),
-    Dialysis: (
-      <div>
-        <h3>Dialysis</h3>
-        <p>Dialysis increases protein needs, typically around 1.2-1.5g per kg body weight.</p>
-        <button data-tip data-for="dialysis-tooltip">ℹ️</button>
-        <Tooltip id="dialysis-tooltip" place="top" effect="solid">
-          Dialysis patients require higher protein and must manage fluid intake.
-        </Tooltip>
-      </div>
-    ),
-    Transplant: (
-      <div>
-        <h3>Transplant</h3>
-        <p>Balanced nutrition is key after a transplant, with a focus on protein recovery.</p>
-        <button data-tip data-for="transplant-tooltip">ℹ️</button>
-        <Tooltip id="transplant-tooltip" place="top" effect="solid">
-          Monitor phosphorus and potassium levels post-transplant.
-        </Tooltip>
-      </div>
-    ),
+    CKD: "Low-protein, low-sodium diet is recommended.",
+    Dialysis: "High-protein diet is recommended.",
+    Transplant: "Balanced diet with reduced restrictions is recommended.",
   };
 
-  // If no condition is provided or the condition doesn't match any key, show a default message
-  const content = recommendations[condition] || (
-    <div>
-      <h3>No condition selected</h3>
-      <p>Please select a condition to view dietary recommendations.</p>
+  return (
+    <div className="App">
+      {/* Nutrient Breakdown Section */}
+      <h2>Nutrient Breakdown</h2>
+      <p>Calories: {calories} kcal</p>
+      <p>Protein: {protein} g</p>
+      <p>Fat: {fat} g</p>
+      <p>Carbs: {carbs} g</p>
+
+      {/* Diet Recommendation Section */}
+      <h2>Diet Recommendation</h2>
+      <p>{recommendations[condition] || "General healthy diet is recommended."}</p>
+
+      {/* Download Diet Chart Section */}
+      <DietChartDownload 
+        calories={calories} 
+        protein={protein} 
+        dietType="CKD-friendly" 
+      />
     </div>
   );
-
-  return <div>{content}</div>;
 };
 
-export default DietRecommendation;
+export default Diet;
